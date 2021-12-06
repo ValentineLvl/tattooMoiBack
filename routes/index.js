@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var tattooModel = require('../models/tattoos')
+var projectFormModel = require('../models/projectForms')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -80,5 +81,55 @@ router.post('/sign-up-tattoo', async function(req,res,next){
 
   res.json({result, saveTattoo, error})
 })
+
+
+// Route pour récupérer les formulaires sur notre BDD
+
+router.post('/project-form', async function(req,res,next){
+console.log("arrivé dans le back", req.body)
+  var result = false
+
+  // var tattoo = await tattooModel.findOne({tattooId:saveTattoo._id})
+ 
+    // if(user != null){
+      var newProjectForm = new projectFormModel({
+        gender: req.body.userGenderFromFront,
+    lastName: req.body.userLastNameFromFront,
+    firstName: req.body.userFirstNameFromFront,
+    email: req.body.userEmailFromFront,
+    password: req.body.userPasswordFromFront,
+    phoneNumber: req.body.userPhoneNumberFromFront,
+    address: req.body.userAddressFromFront,
+    postalCode : req.body.userPostalCodeFromFront,
+    city : req.body.userCityFromFront,
+    country : req.body.userCountryFromFront,
+    type: req.body.userFromFront,
+    tattooZone: req.body.usertattooZoneFromFront,
+    width: req.body.userWidthFromFront,
+    heigth: req.body.userHeightFromFront,
+    style: req.body.userStyleFromFront,
+    disponibility: req.body.userDisponibilityFromFront,
+    projectImg: req.body.userprojectImgFromFront,
+    confirmationFormSchema:{
+      status: req.body.statusFromFront,
+      date: req.body.dateFromFront,
+      price: req.body.priceFromFront, 
+      comment: req.body.commentFromFront
+      
+    },
+    tattooId: "61ac95745f47660ca3817809",
+      })
+  
+      var projectFormSave = await newProjectForm.save()
+  
+      if(projectFormSave){
+        result = true
+      }
+    // }
+  
+    res.json({result, projectFormSave})
+  })
+
+
 
 module.exports = router;

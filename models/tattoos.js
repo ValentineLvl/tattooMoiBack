@@ -33,4 +33,6 @@ const tattooSchema = mongoose.Schema({
 
 
 
-module.exports = mongoose.model('tattoos', tattooSchema)
+var tattooModel = mongoose.model('tattoos', tattooSchema)
+
+module.exports = tattooModel
