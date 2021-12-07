@@ -217,7 +217,7 @@ router.post('/sign-up-tattoo', async function(req,res,next){
 })
 
 
-// Route pour récupérer les formulaires sur notre BDD
+// POST PROJECT FORM 
 
 router.post('/project-form', async function(req,res,next){
 console.log("arrivé dans le back", req.body)
