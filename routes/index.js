@@ -1,8 +1,20 @@
 var express = require('express');
 var router = express.Router();
+var uniqid = require('uniqid');
+var fs = require('fs');
 
 var tattooModel = require('../models/tattoos')
 var projectFormModel = require('../models/projectForms')
+
+
+// import de cloudinary
+var cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+ cloud_name: 'ddhafzlmt',
+ api_key: '717449164584152',
+ api_secret: 'V8nVQBNu1PDiug2hotSf3Gr7SfQ' 
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -11,6 +23,25 @@ router.get('/', function(req, res, next) {
 
 
 
+// POST UPLOAD (envoyer photo sur cloudinary)
+router.post('/upload', async function(req, res, next) {
+  console.log("backend activé")
+  
+  var pictureName = './tmp/'+uniqid()+'.jpg';
+  var resultCopy = await req.files.avatar.mv(pictureName);
+  if(!resultCopy) {
+    var resultCloudinary = await cloudinary.uploader.upload(pictureName);
+    res.json(resultCloudinary);
+   
+  } else {
+    res.json({error: resultCopy});
+  }
+
+  fs.unlinkSync(pictureName);
+  console.log(resultCloudinary, "result cloudinary")
+});
+
+// POST SIGN UO TATTOO
 router.post('/sign-up-tattoo', async function(req,res,next){
 
   var error = []
@@ -109,7 +140,7 @@ console.log("arrivé dans le back", req.body)
     heigth: req.body.userHeightFromFront,
     style: req.body.userStyleFromFront,
     disponibility: req.body.userDisponibilityFromFront,
-    projectImg: req.body.userprojectImgFromFront,
+    projectImg: req.body.userProjectImgFromFront,
     confirmationFormSchema:{
       status: req.body.statusFromFront,
       date: req.body.dateFromFront,
