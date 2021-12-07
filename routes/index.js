@@ -111,6 +111,7 @@ router.post('/sign-up', async function(req,res,next){
       password: hash,
       passwordConfirmation: hashConfirmation,
       token: uid2(32),
+      // formId: projectFormSave._id
     })
   
     saveClient = await newClient.save()
@@ -255,13 +256,33 @@ console.log("arrivé dans le back", req.body)
       })
   
       var projectFormSave = await newProjectForm.save()
-  
+  var client =  await clientModel.findOne({token : req.body.token})
+  client.formId.push(projectFormSave._id)
+  var clientSave = await client.save()
+
       if(projectFormSave){
         result = true
       }
     // }
   
-    res.json({result, projectFormSave})
+    res.json({result, projectFormSave, clientSave})
+  })
+
+
+  // GET PROJECT FORM
+  router.get('/project-form', async function(req,res,next){
+    
+    var projectForm = []
+    // var user = await clientModel.findOne({token: req.query.token})
+    
+    // if(user != null){
+        projectForm = await projectFormModel.find()
+        console.log("coucou", projectForm)
+      // }
+      
+    
+  
+    res.json({projectForm})
   })
 
 
