@@ -20,7 +20,7 @@ router.post('/sign-in', async function(req,res,next){
   var token = null;
   
   if(req.body.userEmailFromFront == '' || req.body.userPasswordFromFront == ''){
-    error.push('champs vides')
+    error.push('Veuillez remplir tous les champs')
   }
 
   if(error.length == 0){
@@ -34,11 +34,11 @@ router.post('/sign-in', async function(req,res,next){
         token = user.token
       } else {
         result = false
-        error.push('mot de passe incorrect')
+        error.push('Mot de passe incorrect')
       }
       
     } else {
-      error.push('email incorrect')
+      error.push('Adresse email incorrect')
     }
   }
   
@@ -49,7 +49,7 @@ router.post('/sign-up', async function(req,res,next){
 
   var error = [];
   var result = false;
-  var saveUser = null;
+  var saveClient = null;
   var token = null;
 
 
@@ -58,7 +58,7 @@ router.post('/sign-up', async function(req,res,next){
   })
 
   if(data != null){
-    error.push('utilisateur déjà présent')
+    error.push('Adresse email déjà utilisée')
   }
 
   if(req.body.userGenderFromFront == ''
@@ -71,13 +71,17 @@ router.post('/sign-up', async function(req,res,next){
   || req.body.userCityFromFront == ''
   || req.body.userPasswordFromFront == ''
   ){
-    error.push('champs vides')
+    error.push('Veuillez remplir tous les champs')
   }
 
+  if (req.body.userPasswordFromFront!=req.body.userPasswordConfirmationFromFront) {
+    error.push("Les mots de passe ne correspondent pas.")
+  } 
 
   if(error.length == 0){
     console.log(req.body)
     var hash = bcrypt.hashSync(req.body.userPasswordFromFront, 10);
+    var hashConfirmation = bcrypt.hashSync(req.body.userPasswordConfirmationFromFront, 10);
     
     var newClient = new clientModel({
       gender: req.body.userGenderFromFront,
@@ -88,6 +92,7 @@ router.post('/sign-up', async function(req,res,next){
       postalCode: req.body.userPostalCodeFromFront,
       city: req.body.userCityFromFront,
       password: hash,
+      passwordConfirmation: hashConfirmation,
       token: uid2(32),
     })
   
@@ -100,7 +105,6 @@ router.post('/sign-up', async function(req,res,next){
     }
   }
   
-
   res.json({result, saveClient, error, token})
 })
 
@@ -109,7 +113,7 @@ router.post('/sign-up-tattoo', async function(req,res,next){
 
   var error = []
   var result = false
-  var saveUser = null
+  var saveTattoo = null
 
   const data = await tattooModel.findOne({
     email: req.body.emailFromFront

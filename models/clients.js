@@ -11,6 +11,7 @@ const clientSchema = mongoose.Schema({
     postalCode: String,
     city: String,
     password: String,
+    passwordConfirmation: String,
     formId: {type: mongoose.Schema.Types.ObjectId, ref: 'projectForms'},
     tattooId: {type: mongoose.Schema.Types.ObjectId, ref: 'tattoos'},
 })
