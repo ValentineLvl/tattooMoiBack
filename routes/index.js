@@ -1,16 +1,32 @@
 var express = require('express');
 var router = express.Router();
+var uniqid = require('uniqid');
+var fs = require('fs');
 
 var uid2 = require('uid2');
 var bcrypt = require('bcrypt');
 
-var tattooModel = require('../models/tattoos');
+
 var clientModel = require('../models/clients');
+var tattooModel = require('../models/tattoos')
+var projectFormModel = require('../models/projectForms')
+
+
+// import de cloudinary
+var cloudinary = require('cloudinary').v2;
+
+cloudinary.config({
+ cloud_name: 'ddhafzlmt',
+ api_key: '717449164584152',
+ api_secret: 'V8nVQBNu1PDiug2hotSf3Gr7SfQ' 
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
+
+// POST SIGN IN CLIENT
 
 router.post('/sign-in', async function(req,res,next){
 
@@ -45,6 +61,7 @@ router.post('/sign-in', async function(req,res,next){
   res.json({result, user, error, token})
 })
 
+// POST SIGN UP CLIENT
 router.post('/sign-up', async function(req,res,next){
 
   var error = [];
@@ -109,6 +126,25 @@ router.post('/sign-up', async function(req,res,next){
 })
 
 
+// POST UPLOAD (envoyer photo sur cloudinary)
+router.post('/upload', async function(req, res, next) {
+  console.log("backend activé")
+  
+  var pictureName = './tmp/'+uniqid()+'.jpg';
+  var resultCopy = await req.files.avatar.mv(pictureName);
+  if(!resultCopy) {
+    var resultCloudinary = await cloudinary.uploader.upload(pictureName);
+    res.json(resultCloudinary);
+   
+  } else {
+    res.json({error: resultCopy});
+  }
+
+  fs.unlinkSync(pictureName);
+  console.log(resultCloudinary, "result cloudinary")
+});
+
+// POST SIGN UP TATTOO
 router.post('/sign-up-tattoo', async function(req,res,next){
 
   var error = []
@@ -179,5 +215,55 @@ router.post('/sign-up-tattoo', async function(req,res,next){
 
   res.json({result, saveTattoo, error})
 })
+
+
+// Route pour récupérer les formulaires sur notre BDD
+
+router.post('/project-form', async function(req,res,next){
+console.log("arrivé dans le back", req.body)
+  var result = false
+
+  // var tattoo = await tattooModel.findOne({tattooId:saveTattoo._id})
+ 
+    // if(user != null){
+      var newProjectForm = new projectFormModel({
+        gender: req.body.userGenderFromFront,
+    lastName: req.body.userLastNameFromFront,
+    firstName: req.body.userFirstNameFromFront,
+    email: req.body.userEmailFromFront,
+    password: req.body.userPasswordFromFront,
+    phoneNumber: req.body.userPhoneNumberFromFront,
+    address: req.body.userAddressFromFront,
+    postalCode : req.body.userPostalCodeFromFront,
+    city : req.body.userCityFromFront,
+    country : req.body.userCountryFromFront,
+    type: req.body.userFromFront,
+    tattooZone: req.body.usertattooZoneFromFront,
+    width: req.body.userWidthFromFront,
+    heigth: req.body.userHeightFromFront,
+    style: req.body.userStyleFromFront,
+    disponibility: req.body.userDisponibilityFromFront,
+    projectImg: req.body.userProjectImgFromFront,
+    confirmationFormSchema:{
+      status: req.body.statusFromFront,
+      date: req.body.dateFromFront,
+      price: req.body.priceFromFront, 
+      comment: req.body.commentFromFront
+      
+    },
+    tattooId: "61ac95745f47660ca3817809",
+      })
+  
+      var projectFormSave = await newProjectForm.save()
+  
+      if(projectFormSave){
+        result = true
+      }
+    // }
+  
+    res.json({result, projectFormSave})
+  })
+
+
 
 module.exports = router;
