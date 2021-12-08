@@ -34,13 +34,14 @@ router.post('/sign-in', async function(req,res,next){
   var user = null;
   var error = [];
   var token = null;
+
   
   if(req.body.userEmailFromFront == '' || req.body.userPasswordFromFront == ''){
     error.push('Veuillez remplir tous les champs')
   }
 
   if(error.length == 0){
-    const user = await clientModel.findOne({
+    user = await clientModel.findOne({
       email: req.body.userEmailFromFront,
     })
   
@@ -59,6 +60,17 @@ router.post('/sign-in', async function(req,res,next){
   }
   
   res.json({result, user, error, token})
+})
+
+//GET POUR RECUPÉRER LES DATAS DU CLIENT
+router.get('/client-data', async function(req,res,next){
+  var client = await clientModel.findOne({token: req.query.token})
+
+  // if(client != null){
+  //   firstName = client.firstName
+  // }
+
+  res.json({client})
 })
 
 // POST SIGN UP CLIENT
@@ -96,7 +108,7 @@ router.post('/sign-up', async function(req,res,next){
   } 
 
   if(error.length == 0){
-    console.log(req.body)
+    //console.log(req.body)
     var hash = bcrypt.hashSync(req.body.userPasswordFromFront, 10);
     var hashConfirmation = bcrypt.hashSync(req.body.userPasswordConfirmationFromFront, 10);
     
@@ -105,7 +117,8 @@ router.post('/sign-up', async function(req,res,next){
       lastName: req.body.userLastNameFromFront,
       firstName: req.body.userFirstNameFromFront,
       email: req.body.userEmailFromFront,
-      address: req.body.userPhoneNumberFromFront,
+      phoneNumber: req.body.userPhoneNumberFromFront,
+      address: req.body.userAddressFromFront,
       postalCode: req.body.userPostalCodeFromFront,
       city: req.body.userCityFromFront,
       password: hash,
@@ -141,7 +154,7 @@ router.post('/upload', async function(req, res, next) {
   }
 
   fs.unlinkSync(pictureName);
-  console.log(resultCloudinary, "result cloudinary")
+  //console.log(resultCloudinary, "result cloudinary")
 });
 
 // POST SIGN UP TATTOO
@@ -220,7 +233,7 @@ router.post('/sign-up-tattoo', async function(req,res,next){
 // POST PROJECT FORM 
 
 router.post('/project-form', async function(req,res,next){
-console.log("arrivé dans le back", req.body)
+//console.log("arrivé dans le back", req.body)
   var result = false
 
   // var tattoo = await tattooModel.findOne({tattooId:saveTattoo._id})
