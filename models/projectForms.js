@@ -30,6 +30,7 @@ const projectFormSchema = mongoose.Schema({
     projectImg: String, 
     confirmationFormSchema:[confirmationFormSchema],
     tattooId: {type: mongoose.Schema.Types.ObjectId, ref: 'tattoos'},
+    description: String,
     
     
 
