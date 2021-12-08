@@ -111,7 +111,7 @@ router.post('/sign-up', async function(req,res,next){
       password: hash,
       passwordConfirmation: hashConfirmation,
       token: uid2(32),
-      // formId: projectFormSave._id
+      
     })
   
     saveClient = await newClient.save()
@@ -253,6 +253,7 @@ console.log("arrivé dans le back", req.body)
       
     },
     tattooId: "61ac95745f47660ca3817809",
+    description: req.body.userDescriptionFromFront
       })
   
       var projectFormSave = await newProjectForm.save()
@@ -272,19 +273,35 @@ console.log("arrivé dans le back", req.body)
   // GET PROJECT FORM
   router.get('/project-form', async function(req,res,next){
     
-    var projectForm = []
-    // var user = await clientModel.findOne({token: req.query.token})
     
-    // if(user != null){
-        projectForm = await projectFormModel.find()
-        console.log("coucou", projectForm)
-      // }
-      
+    var user = await clientModel.findOne({token: req.query.token}).populate("formId")
     
+   
   
-    res.json({projectForm})
+    res.json({user})
   })
 
+// DELETE PROJECT FORM
 
+router.delete('/project-form', async function(req,res,next){
+  var result = false
+  var user = await clientModel.findOne({token: req.body.token})
+console.log(req.body.token)
+  if(user != null){
+    var returnDb = await projectFormModel.deleteOne({ _id : req.body.formId})
+    user.formId.pull(req.body.formId)
+    user = await user.save()
+
+    if(returnDb.deletedCount == 1){
+      result = true
+    }
+    console.log("result", result, user)
+  }
+console.log("returnDb", returnDb)
+
+var newForm = await clientModel.findOne({token: req.body.token}).populate("formId")
+
+  res.json({result, newForm})
+})
 
 module.exports = router;
