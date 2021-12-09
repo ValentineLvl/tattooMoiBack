@@ -294,6 +294,7 @@ router.post('/project-form', async function(req,res,next){
  
     // if(user != null){
       var newProjectForm = new projectFormModel({
+        request: req.body.userRequestFromFront,
         gender: req.body.userGenderFromFront,
     lastName: req.body.userLastNameFromFront,
     firstName: req.body.userFirstNameFromFront,

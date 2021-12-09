@@ -11,6 +11,7 @@ var confirmationFormSchema = mongoose.Schema({
 
 const projectFormSchema = mongoose.Schema({
     token: String,
+    request: String,
     gender: String,
     lastName: String,
     firstName: String,
