@@ -387,13 +387,13 @@ router.get('/search-tattoo', async function (req, res, next) {
 // POST FAVORITES
 router.post('/favorites', async function(req,res,next){
 
-  var tattoo =  await tattooModel.findOne({email: req.body.emailFromFront})
-
+  var tattoo =  await tattooModel.findOne({_id : req.body.IdFromFront})
+console.log("coucou", tattoo)
   var client =  await clientModel.findOne({token : req.body.token})
   client.tattooId.push(tattoo._id)
   var clientSave = await client.save()
 
-  res.json({result, tattoo, clientSave})
+  res.json({tattoo, clientSave})
 })
 
 // GET FAVORITES
