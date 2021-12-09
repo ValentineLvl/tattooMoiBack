@@ -370,6 +370,8 @@ var newForm = await clientModel.findOne({token: req.body.token}).populate("formI
 
   res.json({result, newForm})
 })
+
+// GET SEARCH TATTOO
 router.get('/search-tattoo', async function (req, res, next) {
 
     var searchResult = await tattooModel.find({ styleList: req.query.styleList}) 
@@ -382,4 +384,55 @@ router.get('/search-tattoo', async function (req, res, next) {
     res.json({result, searchResult});
 });
 
+// POST FAVORITES
+router.post('/favorites', async function(req,res,next){
+
+  var tattoo =  await tattooModel.findOne({email: req.body.emailFromFront})
+
+  var client =  await clientModel.findOne({token : req.body.token})
+  client.tattooId.push(tattoo._id)
+  var clientSave = await client.save()
+
+  res.json({result, tattoo, clientSave})
+})
+
+// GET FAVORITES
+router.get('/favorites', async function(req,res,next){
+    
+  
+  var user = await clientModel.findOne({token: req.query.token}).populate("tattooId")
+  
+ 
+
+  res.json({user})
+})
+
+// DELETE FAVORITES
+
+router.delete('/favorites', async function(req,res,next){
+  var result = false
+  var user = await clientModel.findOne({token: req.body.token})
+console.log(req.body.token)
+var tattoo =  await tattooModel.find() 
+  if(user != null){
+    
+    
+    client.tattooId.filter((element)=> element._id != tattoo._id)
+    var clientSave = await client.save()
+  
+    }
+   
+  
+
+
+// var newForm = await clientModel.findOne({token: req.body.token}).populate("formId")
+
+  res.json({clientSave, tattoo})
+})
+
+
 module.exports = router;
+
+
+
+
