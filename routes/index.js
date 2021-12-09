@@ -77,9 +77,14 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
 
 router.get('/search-tattoo', async function (req, res, next) {
 
-    var searchResult = await tattooModel.find({ styleList: req.query.styleList })
+    var searchResult = await tattooModel.find({ styleList: req.query.styleList}) 
 
-    res.json(searchResult);
+    var result = false;
+    if(searchResult){
+        result = true
+    }
+
+    res.json({result, searchResult});
 });
 
 module.exports = router;
