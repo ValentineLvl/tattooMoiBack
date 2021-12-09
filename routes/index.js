@@ -382,4 +382,27 @@ router.get('/search-tattoo', async function (req, res, next) {
     res.json({result, searchResult});
 });
 
+// POST FAVORITES
+router.post('/favorites', async function(req,res,next){
+
+  var tattoo =  await tattooModel.findOne({_id : req.body.IdFromFront})
+console.log("coucou", tattoo)
+  var client =  await clientModel.findOne({token : req.body.token})
+  client.tattooId.push(tattoo._id)
+  var clientSave = await client.save()
+
+  res.json({tattoo, clientSave})
+})
+
+// GET FAVORITES
+router.get('/favorites', async function(req,res,next){
+    
+  
+  var user = await clientModel.findOne({token: req.query.token}).populate("tattooId")
+  
+ 
+
+  res.json({user})
+})
+
 module.exports = router;
