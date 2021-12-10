@@ -16,9 +16,9 @@ var projectFormModel = require('../models/projectForms')
 var cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
- cloud_name: 'ddhafzlmt',
- api_key: '717449164584152',
- api_secret: 'V8nVQBNu1PDiug2hotSf3Gr7SfQ' 
+    cloud_name: 'ddhafzlmt',
+    api_key: '717449164584152',
+    api_secret: 'V8nVQBNu1PDiug2hotSf3Gr7SfQ'
 });
 
 /* GET home page. */
@@ -28,134 +28,134 @@ router.get('/', function (req, res, next) {
 
 // POST SIGN IN CLIENT
 
-router.post('/sign-in', async function(req,res,next){
+router.post('/sign-in', async function (req, res, next) {
 
-  var result = false;
-  var user = null;
-  var error = [];
-  var token = null;
+    var result = false;
+    var user = null;
+    var error = [];
+    var token = null;
 
-  
-  if(req.body.userEmailFromFront == '' || req.body.userPasswordFromFront == ''){
-    error.push('Veuillez remplir tous les champs')
-  }
 
-  if(error.length == 0){
-    user = await clientModel.findOne({
-      email: req.body.userEmailFromFront,
-    })
-  
-    if(user){
-      if(bcrypt.compareSync(req.body.userPasswordFromFront, user.password)){
-        result = true
-        token = user.token
-      } else {
-        result = false
-        error.push('Mot de passe incorrect')
-      }
-      
-    } else {
-      error.push('Adresse email incorrect')
+    if (req.body.userEmailFromFront == '' || req.body.userPasswordFromFront == '') {
+        error.push('Veuillez remplir tous les champs')
     }
-  }
-  
-  res.json({result, user, error, token})
+
+    if (error.length == 0) {
+        user = await clientModel.findOne({
+            email: req.body.userEmailFromFront,
+        })
+
+        if (user) {
+            if (bcrypt.compareSync(req.body.userPasswordFromFront, user.password)) {
+                result = true
+                token = user.token
+            } else {
+                result = false
+                error.push('Mot de passe incorrect')
+            }
+
+        } else {
+            error.push('Adresse email incorrect')
+        }
+    }
+
+    res.json({ result, user, error, token })
 })
 
 //GET POUR RECUPÉRER LES DATAS DU CLIENT
-router.get('/client-data', async function(req,res,next){
-  var client = await clientModel.findOne({token: req.query.token})
+router.get('/client-data', async function (req, res, next) {
+    var client = await clientModel.findOne({ token: req.query.token })
 
-  // if(client != null){
-  //   firstName = client.firstName
-  // }
+    // if(client != null){
+    //   firstName = client.firstName
+    // }
 
-  res.json({client})
+    res.json({ client })
 })
 
 // POST SIGN UP CLIENT
-router.post('/sign-up', async function(req,res,next){
+router.post('/sign-up', async function (req, res, next) {
 
-  var error = [];
-  var result = false;
-  var saveClient = null;
-  var token = null;
+    var error = [];
+    var result = false;
+    var saveClient = null;
+    var token = null;
 
 
-  const data = await clientModel.findOne({
-    email: req.body.userEmailFromFront
-  })
-
-  if(data != null){
-    error.push('Adresse email déjà utilisée')
-  }
-
-  if(req.body.userGenderFromFront == ''
-  || req.body.userLastNameFromFront == ''
-  || req.body.userFirstNameFromFront == ''
-  || req.body.userEmailFromFront == ''
-  || req.body.userPhoneNumberFromFront == ''
-  || req.body.userAddressFromFront == ''
-  || req.body.userPostalCodeFromFront == ''
-  || req.body.userCityFromFront == ''
-  || req.body.userPasswordFromFront == ''
-  ){
-    error.push('Veuillez remplir tous les champs')
-  }
-
-  if (req.body.userPasswordFromFront!=req.body.userPasswordConfirmationFromFront) {
-    error.push("Les mots de passe ne correspondent pas.")
-  } 
-
-  if(error.length == 0){
-    //console.log(req.body)
-    var hash = bcrypt.hashSync(req.body.userPasswordFromFront, 10);
-    var hashConfirmation = bcrypt.hashSync(req.body.userPasswordConfirmationFromFront, 10);
-    
-    var newClient = new clientModel({
-      gender: req.body.userGenderFromFront,
-      lastName: req.body.userLastNameFromFront,
-      firstName: req.body.userFirstNameFromFront,
-      email: req.body.userEmailFromFront,
-      phoneNumber: req.body.userPhoneNumberFromFront,
-      address: req.body.userAddressFromFront,
-      postalCode: req.body.userPostalCodeFromFront,
-      city: req.body.userCityFromFront,
-      password: hash,
-      passwordConfirmation: hashConfirmation,
-      token: uid2(32),
-      
+    const data = await clientModel.findOne({
+        email: req.body.userEmailFromFront
     })
-  
-    saveClient = await newClient.save()
-  
-    
-    if(saveClient){
-      result = true
-      token = saveClient.token
+
+    if (data != null) {
+        error.push('Adresse email déjà utilisée')
     }
-  }
-  
-  res.json({result, saveClient, error, token})
+
+    if (req.body.userGenderFromFront == ''
+        || req.body.userLastNameFromFront == ''
+        || req.body.userFirstNameFromFront == ''
+        || req.body.userEmailFromFront == ''
+        || req.body.userPhoneNumberFromFront == ''
+        || req.body.userAddressFromFront == ''
+        || req.body.userPostalCodeFromFront == ''
+        || req.body.userCityFromFront == ''
+        || req.body.userPasswordFromFront == ''
+    ) {
+        error.push('Veuillez remplir tous les champs')
+    }
+
+    if (req.body.userPasswordFromFront != req.body.userPasswordConfirmationFromFront) {
+        error.push("Les mots de passe ne correspondent pas.")
+    }
+
+    if (error.length == 0) {
+        //console.log(req.body)
+        var hash = bcrypt.hashSync(req.body.userPasswordFromFront, 10);
+        var hashConfirmation = bcrypt.hashSync(req.body.userPasswordConfirmationFromFront, 10);
+
+        var newClient = new clientModel({
+            gender: req.body.userGenderFromFront,
+            lastName: req.body.userLastNameFromFront,
+            firstName: req.body.userFirstNameFromFront,
+            email: req.body.userEmailFromFront,
+            phoneNumber: req.body.userPhoneNumberFromFront,
+            address: req.body.userAddressFromFront,
+            postalCode: req.body.userPostalCodeFromFront,
+            city: req.body.userCityFromFront,
+            password: hash,
+            passwordConfirmation: hashConfirmation,
+            token: uid2(32),
+
+        })
+
+        saveClient = await newClient.save()
+
+
+        if (saveClient) {
+            result = true
+            token = saveClient.token
+        }
+    }
+
+    res.json({ result, saveClient, error, token })
 })
 
 
 // POST UPLOAD (envoyer photo sur cloudinary)
-router.post('/upload', async function(req, res, next) {
-  console.log("backend activé")
-  
-  var pictureName = './tmp/'+uniqid()+'.jpg';
-  var resultCopy = await req.files.avatar.mv(pictureName);
-  if(!resultCopy) {
-    var resultCloudinary = await cloudinary.uploader.upload(pictureName);
-    res.json(resultCloudinary);
-   
-  } else {
-    res.json({error: resultCopy});
-  }
+router.post('/upload', async function (req, res, next) {
+    console.log("backend activé")
 
-  fs.unlinkSync(pictureName);
-  //console.log(resultCloudinary, "result cloudinary")
+    var pictureName = './tmp/' + uniqid() + '.jpg';
+    var resultCopy = await req.files.avatar.mv(pictureName);
+    if (!resultCopy) {
+        var resultCloudinary = await cloudinary.uploader.upload(pictureName);
+        res.json(resultCloudinary);
+
+    } else {
+        res.json({ error: resultCopy });
+    }
+
+    fs.unlinkSync(pictureName);
+    //console.log(resultCloudinary, "result cloudinary")
 });
 
 // // POST SIGN UP TATTOO
@@ -213,9 +213,9 @@ router.post('/upload', async function(req, res, next) {
 //         address: req.body.addressFromFront,
 //         postalCode:req.body.postalCodeFromFront,
 //         city:  req.body.cityFromFront,
-        
+
 //       },
-      
+
 router.post('/sign-up-tattoo', async function (req, res, next) {
 
     var error = []
@@ -286,13 +286,14 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
 
 // POST PROJECT FORM 
 
-router.post('/project-form', async function(req,res,next){
-//console.log("arrivé dans le back", req.body)
-  var result = false
+router.post('/project-form', async function (req, res, next) {
+    //console.log("arrivé dans le back", req.body)
+    var result = false
 
-  // var tattoo = await tattooModel.findOne({tattooId:saveTattoo._id})
- 
+    // var tattoo = await tattooModel.findOne({tattooId:saveTattoo._id})
+
     // if(user != null){
+<<<<<<< HEAD
       var newProjectForm = new projectFormModel({
         request: req.body.userRequestFromFront,
         gender: req.body.userGenderFromFront,
@@ -335,9 +336,47 @@ router.post('/project-form', async function(req,res,next){
 
 
       if(projectFormSave){
+=======
+    var newProjectForm = new projectFormModel({
+        gender: req.body.userGenderFromFront,
+        lastName: req.body.userLastNameFromFront,
+        firstName: req.body.userFirstNameFromFront,
+        email: req.body.userEmailFromFront,
+        password: req.body.userPasswordFromFront,
+        phoneNumber: req.body.userPhoneNumberFromFront,
+        address: req.body.userAddressFromFront,
+        postalCode: req.body.userPostalCodeFromFront,
+        city: req.body.userCityFromFront,
+        country: req.body.userCountryFromFront,
+        type: req.body.userFromFront,
+        tattooZone: req.body.usertattooZoneFromFront,
+        width: req.body.userWidthFromFront,
+        heigth: req.body.userHeightFromFront,
+        style: req.body.userStyleFromFront,
+        disponibility: req.body.userDisponibilityFromFront,
+        projectImg: req.body.userProjectImgFromFront,
+        confirmationFormSchema: {
+            status: req.body.statusFromFront,
+            date: req.body.dateFromFront,
+            price: req.body.priceFromFront,
+            comment: req.body.commentFromFront
+
+        },
+        tattooId: "61ac95745f47660ca3817809",
+        description: req.body.userDescriptionFromFront
+    })
+
+    var projectFormSave = await newProjectForm.save()
+    var client = await clientModel.findOne({ token: req.body.token })
+    client.formId.push(projectFormSave._id)
+    var clientSave = await client.save()
+
+    if (projectFormSave) {
+>>>>>>> baptiste
         result = true
-      }
+    }
     // }
+<<<<<<< HEAD
   
     res.json({result, projectFormSave, clientSave, tattoo, project})
   })
@@ -354,41 +393,64 @@ router.post('/project-form', async function(req,res,next){
   
     res.json({user, project})
   })
+=======
+
+    res.json({ result, projectFormSave, clientSave })
+})
+
+
+// GET PROJECT FORM
+router.get('/project-form', async function (req, res, next) {
+
+
+    var user = await clientModel.findOne({ token: req.query.token }).populate("formId")
+
+
+
+    res.json({ user })
+})
+>>>>>>> baptiste
 
 // DELETE PROJECT FORM
 
-router.delete('/project-form', async function(req,res,next){
-  var result = false
-  var user = await clientModel.findOne({token: req.body.token})
-console.log(req.body.token)
-  if(user != null){
-    var returnDb = await projectFormModel.deleteOne({ _id : req.body.formId})
-    user.formId.pull(req.body.formId)
-    user = await user.save()
+router.delete('/project-form', async function (req, res, next) {
+    var result = false
+    var user = await clientModel.findOne({ token: req.body.token })
+    console.log(req.body.token)
+    if (user != null) {
+        var returnDb = await projectFormModel.deleteOne({ _id: req.body.formId })
+        user.formId.pull(req.body.formId)
+        user = await user.save()
 
-    if(returnDb.deletedCount == 1){
-      result = true
+        if (returnDb.deletedCount == 1) {
+            result = true
+        }
+        console.log("result", result, user)
     }
-    console.log("result", result, user)
-  }
-console.log("returnDb", returnDb)
+    console.log("returnDb", returnDb)
 
-var newForm = await clientModel.findOne({token: req.body.token}).populate("formId")
+    var newForm = await clientModel.findOne({ token: req.body.token }).populate("formId")
 
-  res.json({result, newForm})
+    res.json({ result, newForm })
 })
 
+<<<<<<< HEAD
 // GET SEARCH TATTOO
+=======
+
+>>>>>>> baptiste
 router.get('/search-tattoo', async function (req, res, next) {
 
-    var searchResult = await tattooModel.find({ styleList: req.query.styleList}) 
+    var searchResult = await tattooModel.find({styleList: { '$in': req.query.styleList }})
+    var searchTatoueur = await tattooModel.findOne({ firstName: req.query.firstName })
 
     var result = false;
-    if(searchResult){
+
+    if (searchResult) {
         result = true
     }
 
-    res.json({result, searchResult});
+    res.json({ result, searchResult, searchTatoueur });
 });
 
 // POST FAVORITES
