@@ -374,7 +374,7 @@ router.delete('/project-form', async function (req, res, next) {
 router.get('/search-tattoo', async function (req, res, next) {
 
     var searchResult = await tattooModel.find({styleList: { '$in': req.query.styleList }})
-    var searchTatoueur = await tattooModel.find({ firstName: req.query.firstName })
+    var searchTatoueur = await tattooModel.findOne({ firstName: req.query.firstName })
 
     var result = false;
 
