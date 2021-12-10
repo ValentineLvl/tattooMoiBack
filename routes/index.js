@@ -439,7 +439,3 @@ var tattoo =  await tattooModel.find()
 
 
 module.exports = router;
-
-
-
-
