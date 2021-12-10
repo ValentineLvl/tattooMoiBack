@@ -319,33 +319,40 @@ router.post('/project-form', async function(req,res,next){
       comment: req.body.commentFromFront
       
     },
-    tattooId: "61ac95745f47660ca3817809",
+    // tattooId: req.body.tattooIdFromFront,
     description: req.body.userDescriptionFromFront
       })
+      var tattoo =  await tattooModel.findOne({_id : req.body.tattooIdFromFront})
+  newProjectForm.tattooId.push(tattoo._id)
   
       var projectFormSave = await newProjectForm.save()
+      var project = await projectFormModel.findOne(projectFormSave._id).populate("tattooId")
+
   var client =  await clientModel.findOne({token : req.body.token})
   client.formId.push(projectFormSave._id)
   var clientSave = await client.save()
+
+
 
       if(projectFormSave){
         result = true
       }
     // }
   
-    res.json({result, projectFormSave, clientSave})
+    res.json({result, projectFormSave, clientSave, tattoo, project})
   })
 
 
   // GET PROJECT FORM
   router.get('/project-form', async function(req,res,next){
     
-    
+    var project = await projectFormModel.findOne({_id : req.query.Id}).populate("tattooId")
     var user = await clientModel.findOne({token: req.query.token}).populate("formId")
+   
     
    
   
-    res.json({user})
+    res.json({user, project})
   })
 
 // DELETE PROJECT FORM
