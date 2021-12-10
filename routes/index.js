@@ -418,26 +418,15 @@ router.get('/favorites', async function (req, res, next) {
 
 // DELETE FAVORITES
 
-router.delete('/favorites', async function (req, res, next) {
-    var result = false
-    var user = await clientModel.findOne({ token: req.body.token })
-    console.log(req.body.token)
-    var tattoo = await tattooModel.find()
-    if (user != null) {
+router.post('/delete-favorites', async function (req, res, next) {
+    
+    var deleteFavorite = await clientModel.updateOne({token: req.body.token}, {$pull: {tattooId :{$in: req.body.tattooIdFromFront}}})
 
+    var newFavorite = await clientModel.findOne({ token: req.body.token }).populate("tattooId")
 
-        client.tattooId.filter((element) => element._id != tattoo._id)
-        var clientSave = await client.save()
-
-    }
-
-
-
-
-    // var newForm = await clientModel.findOne({token: req.body.token}).populate("formId")
-
-    res.json({ clientSave, tattoo })
+    res.json({deleteFavorite, newFavorite})
 })
+
 
 
 module.exports = router;
