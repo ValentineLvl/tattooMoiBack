@@ -8,8 +8,8 @@ var bcrypt = require('bcrypt');
 
 
 var clientModel = require('../models/clients');
-var tattooModel = require('../models/tattoos')
-var projectFormModel = require('../models/projectForms')
+var tattooModel = require('../models/tattoos');
+var projectFormModel = require('../models/projectForms');
 
 
 // import de cloudinary
@@ -158,117 +158,103 @@ router.post('/upload', async function (req, res, next) {
     //console.log(resultCloudinary, "result cloudinary")
 });
 
-// // POST SIGN UP TATTOO
-// router.post('/sign-up-tattoo', async function(req,res,next){
 
-//   var error = []
-//   var result = false
-//   var saveTattoo = null
+ // POST SIGN IN TATTOO
+router.post('/sign-in-tattoo', async function(req,res,next){
+    var result = false;
+    var user = null;
+    var error = [];
+    var token = null;
 
-//   const data = await tattooModel.findOne({
-//     email: req.body.emailFromFront
-//   })
+    if (req.body.emailFromFront == '' || req.body.passwordFromFront == '') {
+        error.push('Veuillez remplir tous les champs')
+    }
 
-//   if(data != null){
-//     error.push('utilisateur déjà présent')
-//   }
+    if (error.length == 0) {
+        user = await tattooModel.findOne({
+            email: req.body.emailFromFront,
+        })
 
-//   if(
-//    req.body.lastNameFromFront == ''
-//   || req.body.firstNameFromFront == ''
-//   || req.body.emailFromFront == ''
-//   || req.body.phoneFromFront == ''
-//   || req.body.siretFromFront == ''
-//   || req.body.styleFromFront == ''
-//   || req.body.tattooShopFromFront == ''
-//   || req.body.addressFromFront == ''
-//   || req.body.postalCodeFromFront == ''
-//   || req.body.cityFromFront == ''
+        if (user) {
+            if (bcrypt.compareSync(req.body.passwordFromFront, user.password)) {
+                result = true
+                token = user.token
+            } else {
+                result = false
+                error.push('Mot de passe incorrect')
+            }
 
+        } else {
+            error.push('Adresse email incorrect')
+        }
+    }
 
-//   ){
-//     error.push('champs vides')
-//   }
+    res.json({ result, user, error, token })
+})
 
-
-//   if(error.length == 0){
-//     var newTattoo = new tattooModel({
-//       gender: req.body.genderFromFront ,
-//       lastName:  req.body.lastNameFromFront,
-//       firstName: req.body.firstNameFromFront,
-//       email: req.body.emailFromFront,
-//       password: req.body.passwordFromFront,
-//       phoneNumber: req.body.phoneFromFront , 
-//       siret: req.body.siretFromFront,
-//       schedule: req.body.scheduleFromFront,
-//       styleList: req.body.styleFromFront , 
-//       website: req.body.websiteFromFront,
-//       facebook: req.body.facebookFromFront,
-//       instagram: req.body.instagramFromFront,
-//       profilePicture: req.body.profilePictureFromFront,
-//       galleryPhoto: req.body.galleryPhotoFromFront,
-//       color: req.body.colorFromFront,
-//       tattooShopAddress: {
-//         tattooShop : req.body.tattooShopFromFront,
-//         address: req.body.addressFromFront,
-//         postalCode:req.body.postalCodeFromFront,
-//         city:  req.body.cityFromFront,
-
-//       },
-
+// POST SIGN UP TATTOO
 router.post('/sign-up-tattoo', async function (req, res, next) {
 
-    var error = []
-    var result = false
-    var saveUser = null
+    var error = [];
+    var result = false;
+    var saveTattoo = null;
+    var token = null;
 
     const data = await tattooModel.findOne({
         email: req.body.emailFromFront
     })
 
     if (data != null) {
-        error.push('utilisateur déjà présent')
+        error.push('Adresse email déjà utilisée')
     }
 
-    if (
-        req.body.lastNameFromFront == ''
+    if (req.body.genderFromFront == ''
+        || req.body.lastNameFromFront == ''
         || req.body.firstNameFromFront == ''
         || req.body.emailFromFront == ''
+        || req.body.passwordFromFront == ''
         || req.body.phoneFromFront == ''
         || req.body.siretFromFront == ''
-        || req.body.styleFromFront == ''
+        || req.body.scheduleFromFront == ''
         || req.body.tattooShopFromFront == ''
         || req.body.addressFromFront == ''
         || req.body.postalCodeFromFront == ''
         || req.body.cityFromFront == ''
 
     ) {
-        error.push('champs vides')
+        error.push('Veuillez remplir tous les champs')
+    }
+
+    if (req.body.passwordFromFront != req.body.passwordConfirmationFromFront) {
+        error.push("Les mots de passe ne correspondent pas.")
     }
 
     if (error.length == 0) {
+        var hash = bcrypt.hashSync(req.body.passwordFromFront, 10);
+        var hashConfirmation = bcrypt.hashSync(req.body.passwordConfirmationFromFront, 10);
+
         var newTattoo = new tattooModel({
             gender: req.body.genderFromFront,
             lastName: req.body.lastNameFromFront,
             firstName: req.body.firstNameFromFront,
             email: req.body.emailFromFront,
-            password: req.body.passwordFromFront,
+            password: hash,
+            passwordConfirmation: hashConfirmation,
             phoneNumber: req.body.phoneFromFront,
             siret: req.body.siretFromFront,
             schedule: req.body.scheduleFromFront,
             styleList: req.body.styleFromFront,
+            color: req.body.colorFromFront,
             website: req.body.websiteFromFront,
             facebook: req.body.facebookFromFront,
             instagram: req.body.instagramFromFront,
             profilePicture: req.body.profilePictureFromFront,
             galleryPhoto: req.body.galleryPhotoFromFront,
-            color: req.body.colorFromFront,
             tattooShopAddress: {
                 tattooShop: req.body.tattooShopFromFront,
                 address: req.body.addressFromFront,
                 postalCode: req.body.postalCodeFromFront,
                 city: req.body.cityFromFront,
-
             },
 
         })
@@ -277,10 +263,11 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
 
         if (saveTattoo) {
             result = true
+            token = saveTattoo.token
         }
     }
-
-    res.json({ result, saveTattoo, error })
+console.log('saveTattoo', saveTattoo);
+    res.json({ result, saveTattoo, error, token })
 })
 
 
