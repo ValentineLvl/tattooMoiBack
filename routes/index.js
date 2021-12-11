@@ -256,7 +256,7 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
                 postalCode: req.body.postalCodeFromFront,
                 city: req.body.cityFromFront,
             },
-
+            token: uid2(32),
         })
 
         saveTattoo = await newTattoo.save()
@@ -266,7 +266,6 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
             token = saveTattoo.token
         }
     }
-console.log('saveTattoo', saveTattoo);
     res.json({ result, saveTattoo, error, token })
 })
 
@@ -417,14 +416,20 @@ router.delete('/favorites', async function (req, res, next) {
         var clientSave = await client.save()
 
     }
-
-
-
-
     // var newForm = await clientModel.findOne({token: req.body.token}).populate("formId")
 
     res.json({ clientSave, tattoo })
 })
 
+//GET POUR RECUPÉRER LES DATAS DU tatoueur
+router.get('/tattoo-data', async function (req, res, next) {
+    var tatoueur = await tattooModel.findOne({ token: req.query.token })
+
+    // if(client != null){
+    //   firstName = client.firstName
+    // }
+
+    res.json({ tatoueur })
+})
 
 module.exports = router;
