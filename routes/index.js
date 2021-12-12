@@ -229,7 +229,7 @@ router.get('/project-form', async function (req, res, next) {
     var user = await clientModel.findOne({ token: req.query.token }).populate("formId")
     // console.log("user", user.formId[0]._id)
     var project = await projectFormModel.findById(user.formId[0]._id).populate("tattooProjectId")
-    console.log("user", project.tattooProjectId.lastName)
+    console.log("user", project.tattooProjectId)
 
     res.json({ user, project : project.tattooProjectId})
 })
