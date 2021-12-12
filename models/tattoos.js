@@ -17,16 +17,17 @@ const tattooSchema = mongoose.Schema({
     firstName: String,
     email: String,
     password: String,
+    passwordConfirmation: String,
     phoneNumber: String, 
     siret: Number,
     schedule: String,
     styleList: [String], 
+    color : [String],
     website: String,
     facebook: String,
     instagram: String,
     profilePicture: String,
     galleryPhoto: [String],
-    color : [String],
     tattooShopAddress: [tattooShopAddressSchema],
 
 })

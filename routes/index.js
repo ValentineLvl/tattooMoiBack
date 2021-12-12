@@ -8,8 +8,8 @@ var bcrypt = require('bcrypt');
 
 
 var clientModel = require('../models/clients');
-var tattooModel = require('../models/tattoos')
-var projectFormModel = require('../models/projectForms')
+var tattooModel = require('../models/tattoos');
+var projectFormModel = require('../models/projectForms');
 
 
 // import de cloudinary
@@ -308,6 +308,39 @@ router.post('/delete-favorites', async function (req, res, next) {
 
 //////////////////////////DEBUT ROUTES TATOUEURS////////////////////////////////////
 
+// POST SIGN IN TATTOO
+router.post('/sign-in-tattoo', async function(req,res,next){
+    var result = false;
+    var user = null;
+    var error = [];
+    var token = null;
+
+    if (req.body.emailFromFront == '' || req.body.passwordFromFront == '') {
+        error.push('Veuillez remplir tous les champs')
+    }
+
+    if (error.length == 0) {
+        user = await tattooModel.findOne({
+            email: req.body.emailFromFront,
+        })
+
+        if (user) {
+            if (bcrypt.compareSync(req.body.passwordFromFront, user.password)) {
+                result = true
+                token = user.token
+            } else {
+                result = false
+                error.push('Mot de passe incorrect')
+            }
+
+        } else {
+            error.push('Adresse email incorrect')
+        }
+    }
+
+    res.json({ result, user, error, token })
+})
+
 // POST SIGN UP TATTOO
 router.post('/sign-up-tattoo', async function (req, res, next) {
 
@@ -373,7 +406,6 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
                 postalCode: req.body.postalCodeFromFront,
                 city: req.body.cityFromFront,
             },
-
         })
 
         saveTattoo = await newTattoo.save()
@@ -383,10 +415,19 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
             token = saveTattoo.token
         }
     }
-console.log('saveTattoo', saveTattoo);
     res.json({ result, saveTattoo, error, token })
 })
 
+//GET POUR RECUPÉRER LES DATAS DU tatoueur
+router.get('/tattoo-data', async function (req, res, next) {
+    var tatoueur = await tattooModel.findOne({ token: req.query.token })
+
+    // if(client != null){
+    //   firstName = client.firstName
+    // }
+
+    res.json({ tatoueur })
+})
 
 
 module.exports = router;
