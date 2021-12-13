@@ -262,9 +262,7 @@ router.post('/search-tattoo', async function (req, res, next) {
 
     var searchResult = await tattooModel.find({ styleList: { '$in': req.body.styleList } })
 
-    console.log('stylelist', req.body.styleList);
-
-    var searchTatoueur = await tattooModel.findOne({ firstName: req.query.firstName })
+    var searchTatoueur = await tattooModel.findOne({ firstName: { '$in': req.body.firstName } })
 
     var result = false;
 
