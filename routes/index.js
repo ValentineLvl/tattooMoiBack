@@ -257,11 +257,12 @@ router.delete('/project-form', async function (req, res, next) {
     res.json({ result, newForm })
 })
 
-// GET SEARCH TATTOO
-router.get('/search-tattoo', async function (req, res, next) {
+// POST SEARCH TATTOO
+router.post('/search-tattoo', async function (req, res, next) {
 
-    var searchResult = await tattooModel.find({ styleList: { '$in': req.query.styleList } })
-    var searchTatoueur = await tattooModel.findOne({ firstName: req.query.firstName })
+    var searchResult = await tattooModel.find({ styleList: { '$in': req.body.styleList } })
+
+    var searchTatoueur = await tattooModel.findOne({ firstName: { '$in': req.body.firstName } })
 
     var result = false;
 
