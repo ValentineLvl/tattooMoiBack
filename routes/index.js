@@ -259,15 +259,15 @@ router.get('/project-form', async function (req, res, next) {
 
 // GET PROJECT FORM ID
 
-router.get('/project-form-id', async function (req, res, next) {
+// router.get('/project-form-id', async function (req, res, next) {
   
-    var user = await clientModel.findOne({ token: req.query.token })
+//     var user = await clientModel.findOne({ token: req.query.token })
    
-    // console.log("coucou", user)
+//     // console.log("coucou", user)
     
 
-    res.json({ user})
-})
+//     res.json({ user})
+// })
 // DELETE PROJECT FORM
 
 router.delete('/project-form', async function (req, res, next) {
@@ -463,5 +463,15 @@ router.get('/tattoo-data', async function (req, res, next) {
     res.json({ tatoueur })
 })
 
+// GET FORM APPOINTMENT TATTOO
+router.get('/appointment-tattoo', async function (req, res, next) {
+  
+    var form = await projectFormModel.find({tattooProjectId: req.query.id })
+   
+    // console.log("coucou", user)
+    console.log("FORM", form)
+
+    res.json({ form})
+})
 
 module.exports = router;
