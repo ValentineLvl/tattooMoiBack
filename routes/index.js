@@ -220,7 +220,7 @@ router.post('/project-form', async function (req, res, next) {
     }
     // }
 
-    res.json({ result, clientSave, tattoo, project, user })
+    res.json({ result, clientSave, tattoo, project })
 })
 
 
