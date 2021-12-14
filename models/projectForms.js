@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 var confirmationFormSchema = mongoose.Schema({
     status: String,
-    date: Date,
+    date: String,
     price: Number,
     comment: String,
     

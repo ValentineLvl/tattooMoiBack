@@ -474,4 +474,42 @@ router.get('/appointment-tattoo', async function (req, res, next) {
     res.json({ form})
 })
 
+/// POST UPDATE CONFIRMATION FORM 
+
+router.post('/send-confirm', async function (req, res, next) {
+    console.log("arrivé dans le back", req.body)
+    var result = false
+
+    var form = await projectFormModel.findOne({ _id: req.body.formId});
+
+    await projectFormModel.updateOne(
+        {_id: req.body.formId},
+        {$pull:{confirmationFormSchema:
+                  {_id: req.body.confirmId}
+               }
+        },
+        
+       )
+      
+     
+form.confirmationFormSchema.push(
+    {
+        status: req.body.statusFromFront,
+        date: req.body.dateFromFront,
+        price: req.body.priceFromFront,
+        comment: req.body.commentFromFront
+
+    })
+
+    var formSaved = await form.save()
+    console.log("FORMSAVED", formSaved)
+
+    if (formSaved) {
+        result = true
+    }
+    // }
+
+    res.json({ formSaved, result })
+})
+
 module.exports = router;
