@@ -260,9 +260,21 @@ router.delete('/project-form', async function (req, res, next) {
 // POST SEARCH TATTOO
 router.post('/search-tattoo', async function (req, res, next) {
 
-    var searchResult = await tattooModel.find({ styleList: { '$in': req.body.styleList } })
+    var query = {};
 
-    var searchTatoueur = await tattooModel.findOne({ firstName: { '$in': req.body.firstName } })
+    if (req.body.firstName) {
+        query.firstName = req.body.firstName
+    }
+
+    else if (req.body.styleList.length !== 0) {
+        query.styleList = { '$in': req.body.styleList }
+    }
+
+    
+
+console.log('QUERY', query);
+
+    var searchResult = await tattooModel.find(query)
 
     var result = false;
 
@@ -270,7 +282,7 @@ router.post('/search-tattoo', async function (req, res, next) {
         result = true
     }
 
-    res.json({ result, searchResult, searchTatoueur });
+    res.json({ result, searchResult });
 });
 
 // POST FAVORITES
