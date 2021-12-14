@@ -231,7 +231,7 @@ router.get('/project-form', async function (req, res, next) {
     var project = await projectFormModel.findById(user.formId[0]._id).populate("tattooProjectId")
     console.log("user", project.tattooProjectId)
 
-    res.json({ user, project })
+    res.json({ user, project: project.tattooProjectId })
 })
 
 // DELETE PROJECT FORM
@@ -257,12 +257,22 @@ router.delete('/project-form', async function (req, res, next) {
     res.json({ result, newForm })
 })
 
-// GET SEARCH TATTOO
+// POST SEARCH TATTOO
 router.post('/search-tattoo', async function (req, res, next) {
 
-    var searchResult = await tattooModel.find({ styleList: { '$in': req.body.styleList } })
+    var query = {};
 
-    var searchTatoueur = await tattooModel.findOne({ firstName: { '$in': req.body.firstName } })
+    if (req.body.firstName) {
+        query.firstName = req.body.firstName
+    }
+
+    else if (req.body.styleList.length !== 0) {
+        query.styleList = { '$in': req.body.styleList }
+    }
+
+    console.log('QUERY', query);
+
+    var searchResult = await tattooModel.find(query)
 
     var result = false;
 
@@ -270,7 +280,7 @@ router.post('/search-tattoo', async function (req, res, next) {
         result = true
     }
 
-    res.json({ result, searchResult, searchTatoueur });
+    res.json({ result, searchResult });
 });
 
 // POST FAVORITES
