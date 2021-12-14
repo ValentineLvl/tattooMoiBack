@@ -248,9 +248,9 @@ router.delete('/project-form', async function (req, res, next) {
         if (returnDb.deletedCount == 1) {
             result = true
         }
-        console.log("result", result, user)
+       // console.log("result", result, user)
     }
-    console.log("returnDb", returnDb)
+   // console.log("returnDb", returnDb)
 
     var newForm = await clientModel.findOne({ token: req.body.token }).populate("formId")
 
@@ -270,9 +270,7 @@ router.post('/search-tattoo', async function (req, res, next) {
         query.styleList = { '$in': req.body.styleList }
     }
 
-    
-
-console.log('QUERY', query);
+    //console.log('QUERY', query);
 
     var searchResult = await tattooModel.find(query)
 
@@ -287,9 +285,9 @@ console.log('QUERY', query);
 
 // POST FAVORITES
 router.post('/favorites', async function (req, res, next) {
-
+console.log(req.body);
     var tattoo = await tattooModel.findOne({ _id: req.body.IdFromFront })
-    console.log("coucou", tattoo)
+   // console.log("POST FAVORIS AJOUT", tattoo)
     var client = await clientModel.findOne({ token: req.body.token })
     client.tattooId.push(tattoo._id)
     var clientSave = await client.save()
