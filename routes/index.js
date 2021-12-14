@@ -110,7 +110,6 @@ router.post('/sign-up', async function (req, res, next) {
     }
 
     if (error.length == 0) {
-        //console.log(req.body)
         var hash = bcrypt.hashSync(req.body.userPasswordFromFront, 10);
         var hashConfirmation = bcrypt.hashSync(req.body.userPasswordConfirmationFromFront, 10);
 
@@ -248,9 +247,7 @@ router.delete('/project-form', async function (req, res, next) {
         if (returnDb.deletedCount == 1) {
             result = true
         }
-       // console.log("result", result, user)
     }
-   // console.log("returnDb", returnDb)
 
     var newForm = await clientModel.findOne({ token: req.body.token }).populate("formId")
 
@@ -285,9 +282,8 @@ router.post('/search-tattoo', async function (req, res, next) {
 
 // POST FAVORITES
 router.post('/favorites', async function (req, res, next) {
-console.log(req.body);
+
     var tattoo = await tattooModel.findOne({ _id: req.body.IdFromFront })
-   // console.log("POST FAVORIS AJOUT", tattoo)
     var client = await clientModel.findOne({ token: req.body.token })
     client.tattooId.push(tattoo._id)
     var clientSave = await client.save()
