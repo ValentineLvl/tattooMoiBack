@@ -196,7 +196,8 @@ router.post('/project-form', async function (req, res, next) {
         },
         tattooProjectId : tattoo.id,
        
-        description: req.body.userDescriptionFromFront
+        description: req.body.userDescriptionFromFront,
+        type: req.body.userTypeFromFront, 
     })
 
     var projectFormSave = await newProjectForm.save()
