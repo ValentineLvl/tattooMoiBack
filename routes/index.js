@@ -264,10 +264,15 @@ router.post('/search-tattoo', async function (req, res, next) {
 
     if (req.body.firstName) {
         query.firstName = req.body.firstName
-    } else if (req.body.tattooShop) {
-        let tattooshop = { "tattooShopAddress.tattooShop": { "$in": req.body.tattooShop } }
-        query = tattooshop
-    } else if (req.body.styleList.length !== 0) {
+    } else if (req.body.cityInput) {
+        let city = { "tattooShopAddress.city": { "$in": req.body.cityInput } }
+        query = city
+    }
+    // else if (req.body.tattooShop) {
+    //     let tattooshop = { "tattooShopAddress.tattooShop": { "$in": req.body.tattooShop } }
+    //     query = tattooshop
+    // } 
+    else if (req.body.styleList.length !== 0) {
         query.styleList = { '$in': req.body.styleList }
     } else if (req.body.city) {
         let address = { "tattooShopAddress.city": { "$in": req.body.city } }
