@@ -165,7 +165,7 @@ router.post('/project-form', async function (req, res, next) {
     //console.log("arrivé dans le back", req.body)
     var result = false
     var tattoo = await tattooModel.findOne({ _id: req.body.tattooIdFromFront })
-    // var tattoo = await tattooModel.findOne({tattooId:saveTattoo._id})
+    
 
     // if(user != null){
     var newProjectForm = new projectFormModel({
@@ -195,23 +195,24 @@ router.post('/project-form', async function (req, res, next) {
 
         },
         tattooProjectId : tattoo.id,
-        // tattooId: req.body.tattooIdFromFront,
+       
         description: req.body.userDescriptionFromFront
     })
-//     var tattoo = await tattooModel.findOne({ _id: req.body.tattooIdFromFront })
-//     newProjectForm.tattooId.push(tattoo._id)
-// console.log(req.body.tattooIdFromFront)
+
     var projectFormSave = await newProjectForm.save()
     console.log("populate", projectFormSave._id)
     var project= await projectFormModel.findById(projectFormSave._id).populate('tattooProjectId')
-    // var project = await projectFormModel.findOne(projectFormSave._id)
+    var projectSave = await projectFormSave.save()
     
     console.log("c bon", project)
 
     var client = await clientModel.findOne({ token: req.body.token })
-    // client.formId.push(projectFormSave._id)
-    client.formId.push(project._id)
+    
+    client.formId.push(projectSave._id)
+    
     var clientSave = await client.save()
+//    var user= clientSave.populate("formId")
+//     console.log("coucou", user)
 
     if (project) {
         result = true
@@ -224,15 +225,52 @@ router.post('/project-form', async function (req, res, next) {
 
 // GET PROJECT FORM
 router.get('/project-form', async function (req, res, next) {
+//    console.log("on est la", req.query)
+//     var user = await clientModel.findOne({ token: req.query.token }).populate("formId")
    
     var user = await clientModel.findOne({ token: req.query.token }).populate("formId")
     // console.log("user", user.formId[0]._id)
     var project = await projectFormModel.findById(user.formId[0]._id).populate("tattooProjectId")
     console.log("user", project.tattooProjectId)
+//     console.log("coucou", user.formId.length)
+//     for (let i=0;i<user.formId.length; i++){
+//     var project = await projectFormModel.findById(user.formId[i]._id).populate("tattooProjectId")
+//     console.log(user.formId[i]._id)
+//     }
+//     console.log("user", project)
 
-    res.json({ user, project : project.tattooProjectId})
+//     res.json({ user, project: project.tattooProjectId, address : project.tattooProjectId[0].tattooShopAddress})
+
+
+    var user = await clientModel.findOne({ token: req.query.token }).populate({
+        path : 'formId',
+        populate : {
+          path : 'tattooProjectId'
+        }
+      })
+   
+    // console.log("coucou", user.formId.length)
+    // for (let i=0;i<user.formId.length; i++){
+    // var project = await projectFormModel.findById(user.formId[i]._id).populate("tattooProjectId")
+    // console.log(user.formId[i]._id)
+    // }
+    console.log("user", user.formId[0].tattooProjectId)
+
+    res.json({ user})
 })
 
+
+// GET PROJECT FORM ID
+
+// router.get('/project-form-id', async function (req, res, next) {
+  
+//     var user = await clientModel.findOne({ token: req.query.token })
+   
+//     // console.log("coucou", user)
+    
+
+//     res.json({ user})
+// })
 // DELETE PROJECT FORM
 
 router.delete('/project-form', async function (req, res, next) {
@@ -436,5 +474,53 @@ router.get('/tattoo-data', async function (req, res, next) {
     res.json({ tatoueur })
 })
 
+// GET FORM APPOINTMENT TATTOO
+router.get('/appointment-tattoo', async function (req, res, next) {
+  
+    var form = await projectFormModel.find({tattooProjectId: req.query.id })
+   
+    // console.log("coucou", user)
+    console.log("FORM", form)
+
+    res.json({ form})
+})
+
+/// POST UPDATE CONFIRMATION FORM 
+
+router.post('/send-confirm', async function (req, res, next) {
+    console.log("arrivé dans le back", req.body)
+    var result = false
+
+    var form = await projectFormModel.findOne({ _id: req.body.formId});
+
+    await projectFormModel.updateOne(
+        {_id: req.body.formId},
+        {$pull:{confirmationFormSchema:
+                  {_id: req.body.confirmId}
+               }
+        },
+        
+       )
+      
+     
+form.confirmationFormSchema.push(
+    {
+        status: req.body.statusFromFront,
+        date: req.body.dateFromFront,
+        price: req.body.priceFromFront,
+        comment: req.body.commentFromFront
+
+    })
+
+    var formSaved = await form.save()
+    console.log("FORMSAVED", formSaved)
+
+    if (formSaved) {
+        result = true
+    }
+    // }
+
+    res.json({ formSaved, result })
+})
 
 module.exports = router;
