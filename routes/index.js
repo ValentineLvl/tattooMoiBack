@@ -149,13 +149,14 @@ router.post('/upload', async function (req, res, next) {
     var resultCopy = await req.files.avatar.mv(pictureName);
     if (!resultCopy) {
         var resultCloudinary = await cloudinary.uploader.upload(pictureName);
+        fs.unlinkSync(pictureName);
         res.json(resultCloudinary);
 
     } else {
         res.json({ error: resultCopy });
     }
 
-    fs.unlinkSync(pictureName);
+    
     //console.log(resultCloudinary, "result cloudinary")
 });
 
