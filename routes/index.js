@@ -264,10 +264,11 @@ router.post('/search-tattoo', async function (req, res, next) {
 
     if (req.body.firstName) {
         query.firstName = req.body.firstName
-    }
-
-    else if (req.body.styleList.length !== 0) {
+    } else if (req.body.styleList.length !== 0) {
         query.styleList = { '$in': req.body.styleList }
+    } else if (req.body.city) {
+        let address = { "tattooShopAddress.city": { "$in": req.body.city } }
+        query = address
     }
 
     console.log('QUERY', query);
