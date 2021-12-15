@@ -467,10 +467,6 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
 router.get('/tattoo-data', async function (req, res, next) {
     var tatoueur = await tattooModel.findOne({ token: req.query.token })
 
-    // if(client != null){
-    //   firstName = client.firstName
-    // }
-
     res.json({ tatoueur })
 })
 
@@ -479,8 +475,7 @@ router.get('/appointment-tattoo', async function (req, res, next) {
   
     var form = await projectFormModel.find({tattooProjectId: req.query.id })
    
-    // console.log("coucou", user)
-    console.log("FORM", form)
+    //console.log("FORM", form)
 
     res.json({ form})
 })
