@@ -68,10 +68,6 @@ router.post('/sign-in', async function (req, res, next) {
 router.get('/client-data', async function (req, res, next) {
     var client = await clientModel.findOne({ token: req.query.token })
 
-    // if(client != null){
-    //   firstName = client.firstName
-    // }
-
     res.json({ client })
 })
 
@@ -155,20 +151,14 @@ router.post('/upload', async function (req, res, next) {
     } else {
         res.json({ error: resultCopy });
     }
-
-    
-    //console.log(resultCloudinary, "result cloudinary")
 });
 
 // POST PROJECT FORM 
 
 router.post('/project-form', async function (req, res, next) {
-    //console.log("arrivé dans le back", req.body)
     var result = false
     var tattoo = await tattooModel.findOne({ _id: req.body.tattooIdFromFront })
     
-
-    // if(user != null){
     var newProjectForm = new projectFormModel({
         request: req.body.userRequestFromFront,
         gender: req.body.userGenderFromFront,
@@ -213,13 +203,10 @@ router.post('/project-form', async function (req, res, next) {
     client.formId.push(projectSave._id)
     
     var clientSave = await client.save()
-//    var user= clientSave.populate("formId")
-//     console.log("coucou", user)
 
     if (project) {
         result = true
     }
-    // }
 
     res.json({ result, clientSave, tattoo, project })
 })
@@ -227,22 +214,11 @@ router.post('/project-form', async function (req, res, next) {
 
 // GET PROJECT FORM
 router.get('/project-form', async function (req, res, next) {
-//    console.log("on est la", req.query)
-//     var user = await clientModel.findOne({ token: req.query.token }).populate("formId")
    
     var user = await clientModel.findOne({ token: req.query.token }).populate("formId")
-    // console.log("user", user.formId[0]._id)
+
     var project = await projectFormModel.findById(user.formId[0]._id).populate("tattooProjectId")
     console.log("user", project.tattooProjectId)
-//     console.log("coucou", user.formId.length)
-//     for (let i=0;i<user.formId.length; i++){
-//     var project = await projectFormModel.findById(user.formId[i]._id).populate("tattooProjectId")
-//     console.log(user.formId[i]._id)
-//     }
-//     console.log("user", project)
-
-//     res.json({ user, project: project.tattooProjectId, address : project.tattooProjectId[0].tattooShopAddress})
-
 
     var user = await clientModel.findOne({ token: req.query.token }).populate({
         path : 'formId',
@@ -250,29 +226,13 @@ router.get('/project-form', async function (req, res, next) {
           path : 'tattooProjectId'
         }
       })
-   
-    // console.log("coucou", user.formId.length)
-    // for (let i=0;i<user.formId.length; i++){
-    // var project = await projectFormModel.findById(user.formId[i]._id).populate("tattooProjectId")
-    // console.log(user.formId[i]._id)
-    // }
+
     console.log("user", user.formId[0].tattooProjectId)
 
     res.json({ user})
 })
 
 
-// GET PROJECT FORM ID
-
-// router.get('/project-form-id', async function (req, res, next) {
-  
-//     var user = await clientModel.findOne({ token: req.query.token })
-   
-//     // console.log("coucou", user)
-    
-
-//     res.json({ user})
-// })
 // DELETE PROJECT FORM
 
 router.delete('/project-form', async function (req, res, next) {
@@ -301,13 +261,22 @@ router.post('/search-tattoo', async function (req, res, next) {
 
     if (req.body.firstName) {
         query.firstName = req.body.firstName
+    } else if (req.body.cityInput) {
+        let city = { "tattooShopAddress.city": { "$in": req.body.cityInput } }
+        query = city
     }
-
+    // else if (req.body.tattooShop) {
+    //     let tattooshop = { "tattooShopAddress.tattooShop": { "$in": req.body.tattooShop } }
+    //     query = tattooshop
+    // }
     else if (req.body.styleList.length !== 0) {
         query.styleList = { '$in': req.body.styleList }
+    } else if (req.body.city) {
+        let address = { "tattooShopAddress.city": { "$in": req.body.city } }
+        query = address
     }
 
-    //console.log('QUERY', query);
+    console.log('QUERY', query);
 
     var searchResult = await tattooModel.find(query)
 
@@ -342,12 +311,12 @@ router.get('/favorites', async function (req, res, next) {
 // DELETE FAVORITES
 
 router.post('/delete-favorites', async function (req, res, next) {
-    
-    var deleteFavorite = await clientModel.updateOne({token: req.body.token}, {$pull: {tattooId :{$in: req.body.tattooIdFromFront}}})
+
+    var deleteFavorite = await clientModel.updateOne({ token: req.body.token }, { $pull: { tattooId: { $in: req.body.tattooIdFromFront } } })
 
     var newFavorite = await clientModel.findOne({ token: req.body.token }).populate("tattooId")
 
-    res.json({deleteFavorite, newFavorite})
+    res.json({ deleteFavorite, newFavorite })
 })
 
 ///////////////////////////FIN ROUTES CLIENTS///////////////////////////////////////
@@ -356,7 +325,7 @@ router.post('/delete-favorites', async function (req, res, next) {
 //////////////////////////DEBUT ROUTES TATOUEURS////////////////////////////////////
 
 // POST SIGN IN TATTOO
-router.post('/sign-in-tattoo', async function(req,res,next){
+router.post('/sign-in-tattoo', async function (req, res, next) {
     var result = false;
     var user = null;
     var error = [];
@@ -469,10 +438,6 @@ router.post('/sign-up-tattoo', async function (req, res, next) {
 router.get('/tattoo-data', async function (req, res, next) {
     var tatoueur = await tattooModel.findOne({ token: req.query.token })
 
-    // if(client != null){
-    //   firstName = client.firstName
-    // }
-
     res.json({ tatoueur })
 })
 
@@ -481,7 +446,6 @@ router.get('/appointment-tattoo', async function (req, res, next) {
   
     var form = await projectFormModel.find({tattooProjectId: req.query.id })
    
-    // console.log("coucou", user)
     console.log("FORM", form)
 
     res.json({ form})
@@ -520,7 +484,6 @@ form.confirmationFormSchema.push(
     if (formSaved) {
         result = true
     }
-    // }
 
     res.json({ formSaved, result })
 })
